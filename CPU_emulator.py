@@ -33,7 +33,7 @@ class CPU:
     self.acumulatorString = "00"
     self.ramMemory = [[False for _ in range(8)] for _ in range(16)] #If the register doesn't contain an address in the data part, the fourth bit should be True.
                                                                     #e.g.: ramMemory[0][3]=True is data, ramMemory[0][3]=False is an address 
-    self.ramString = ["03","07","00","00","00","00","00","00","00","00","00","00","00","00","00","00"] 
+    self.ramString = ["03","00","00","05","00","00","00","00","00","00","00","00","00","00","00","00"] 
     #Change the next two lines, it's just for tests
     self.ramMemory[0] = [True, False, True, False, False, False, True, True]
     #self.ramMemory[1] = [True, True, False, False, False, True, True, True]
