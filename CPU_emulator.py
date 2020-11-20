@@ -2,8 +2,9 @@ from time import sleep
 from os import system as sys
 
 class CPU:
-  def __init__(self):
+  def __init__(self, rom):
   # Set initial values
+
     self.clockSpeed = 1
     self.teamMembers = ["Aviles Ulises", "Cruz Elian", "Silva Abner"]
     self.clock = False
@@ -31,13 +32,19 @@ class CPU:
     }
     self.acumulatorData = [False, False, False, False]
     self.acumulatorString = "00"
+    self.romMemory = rom
     self.ramMemory = [[False for _ in range(8)] for _ in range(16)] #If the register doesn't contain an address in the data part, the fourth bit should be True.
                                                                     #e.g.: ramMemory[0][3]=True is data, ramMemory[0][3]=False is an address 
-    self.ramString = ["03","00","00","05","00","00","00","00","00","00","00","00","00","00","00","00"] 
-    #Change the next two lines, it's just for tests
-    self.ramMemory[0] = [True, False, True, False, False, False, True, True]
-    #self.ramMemory[1] = [True, True, False, False, False, True, True, True]
-    self.ramMemory[3] = [True, True, False, True, False, True, False, True]
+    self.ramString = ["00","00","00","00","00","00","00","00","00","00","00","00","00","00","00","00"] 
+    #Ignore the next few lines, are just for tests
+    #self.ramMemory[0] = [True, False, False, True, False, False, True, True] #LDA #3
+    #self.ramMemory[1] = [False, False, False, False, False, True, True, True] #ADD h7
+    #self.ramMemory[2] = [True, True, True, True, False, True, True, False]  ##6
+    #self.ramMemory[2] = [True, True, False, False, True, False, True, True] #MOVAW hb->>>>>6+3=9
+    #self.ramMemory[3] = [False, False, True, True, False, False, True, False] #SUB A,#2
+    #self.ramMemory[4] = [True, False, True, False, True, True, True, True] #MOVAR hf
+    #self.ramMemory[7] = [True, True, True, True, False, True, True, False]  # #6
+    #self.ramMemory[15] = [True, True, True, True, True, True, True, False]   #14
     #########################################################################
     self.counterCount = [False, False, False, False]
     self.counterCountStr = "00"
@@ -89,7 +96,7 @@ class CPU:
     self.colorPallete[self.componentColors["acumulator"]], self.acumulatorString, self.colorPallete[self.componentColors["border"]],
     self.colorPallete[self.componentColors["acumulator"]], self.colorPallete[self.componentColors["border"]],
     self.colorPallete[self.componentColors["outside-text"]],
-    )) # I've added two pointers to print the MIR and MDR data, their respective location its on line 78
+    )) # I've added two pointers to print the MIR and MDR data, their respective location its on line 85
 
   def fullAdder_(self, a, b, cin):
   # Pretty self explanatory
@@ -117,8 +124,8 @@ class CPU:
     # self.ram([False, False, False, True], True, [True, True, True, True])
     # print(self.ram([False, False, False, True], False))
     # self.printCpu()
-    while True:
-      self.mar(self.counter(False), False,False)
+    while int(self.counterCountStr)<len(self.romMemory):
+      self.mar(self.counter(False), False, False, False)
       self.counter(True)
       #self.alu(False, False, [False, False, True, True]) # Sum 3 to the acumulator
       #self.ram(self.mar(self.counter(True)), True, self.acumulator(False, "Don't care")) # Store in the direction in the mar (wich takes the counter + 1) th data stores in the acumulator.
@@ -128,7 +135,7 @@ class CPU:
   # Sample call: self.alu(True, False, True, False, [True, False, True, False]) # Where [True, False, True, False] is a list of booleans that represents the hexagesimal value of B in binary
   # The values of a are allways going to be the values stored in the acumulator because of the (retroalimentación en inlgés)
   # If you want to pass data stored in ram you must look for it first and then call alu() with the retrived data from ram
-  # If you want to access the retived data from thr alu, it will be always stored in the acumulator, the method DOES NOT retrive data directly
+  # If you want to access the retived data from thr alu, it will be always stored in the acumulator, the method DOES NOT returns data directly
   # Sample return: [True, False, True, False] (a binary number represented with python booleans stored in a list)
   ########################################################   IMPORTANT   #######################################################################
   # I've changed the opcode of the selectors to match with the one we've been using through the semester. It works as follows: 
@@ -141,13 +148,16 @@ class CPU:
     self.printCpu()
     if (s1): #This selector chooses whether we'll use logic or arithmetic operations, if true, logic ops are chosen, otherwise arithmetic are chosen.
       if (not s0): #Bitwise and, selectors: 10
-        self.acumulator(True, [a[0] and b[0], a[1] and b[1], a[2] and b[3], a[3] and b[4]])
+        self.acumulator(True, [a[0] and b[0], a[1] and b[1], a[2] and b[2], a[3] and b[3]])
       else: #Bitwise or, Selectors: 11
         self.acumulator(True, [a[0] or b[0], a[1] or b[1], a[2] or b[2], a[3] or b[3]])#True, [a[0] or b[0], a[1] or b[1], a[2] or b[2], a[3] or b[3]]
     else:
       self.acumulator(True, self.adderSubstractor_(a, b, s0)) # bitwise sum or substraction deppending on s0, 1->SUB, 0->ADD
     self.componentColors["alu"] = "white"
   
+  def rom(self, memoryDirection):
+      return self.romMemory[self.binaryToDec_(memoryDirection,4)]
+
   def ram(self, memoryDirection, write, data=[]):
   # Reads/Writes data depending in the boolean 'write'. True: write. False: read
   # It needs a memory direction to write/read the data as a list of booleans representing a 4-bit binary number
@@ -210,7 +220,7 @@ class CPU:
         self.counterCountStr = "0" + self.counterCountStr
     return self.counterCount
 
-  def mar(self, memoryDirection, s3, writeOnMemory):
+  def mar(self, memoryDirection, s3, writeOnMemory, readDirect):
   # To provide a memory direction to the ram, you MUST use the mar. 
   # To call it using the current value stored in the counter, call it like this: self.mar(self.counter(False), False, False)
   # To call it using the next value in the counter, call it like this: self.mar(self.counter(True), False, False)
@@ -226,9 +236,13 @@ class CPU:
     self.printCpu() 
     self.componentColors["mar"] = "white"
     if (not writeOnMemory): 
-      dataFetched = self.ram(self.marMemoryDirection,False, "Don't care")
       if (s3): #this tells us wheter we're receiving from Program Counter or the Control Unit, if True, we have to return a value to the CU, else it has to keep the fetch cycle to MDR
+        if (readDirect):
+          dataFetched = self.ram(self.marMemoryDirection, False, "dont care")
+          return self.mdr(dataFetched, s3, False) 
+        dataFetched = self.rom(self.marMemoryDirection)
         return self.mdr(dataFetched, s3, False) 
+      dataFetched = self.rom(self.marMemoryDirection)
       self.mdr(dataFetched, s3, False)
     else:   #This happens when we want to write to memory and the RAM its set on Write mode and the data stored in MDR its written on the needed register.
       data = self.mdrData
@@ -280,9 +294,9 @@ class CPU:
       #################################################### IMPORTANT ###################################################
       instructionFetched = rawData[:3]    #IMPORTANT: the opcode only takes the first 3 bits from left to right
       self.mir(instructionFetched)
-      if (not instructionFetched[0]): #The ALU instructions have a zero in the first bit of the opcode, namely it should be False to be considered an ALU operation
+      if (not instructionFetched[0]):     #The ALU instructions have a zero in the first bit of the opcode, namely it should be False to be considered an ALU operation
         aluInstructions(rawData)
-      else:                           #Here are grouped all the instructions related to transferring data
+      else:                               #Here are grouped all the instructions related to transferring data
         dataTransferInstructions(rawData)
       self.componentColors["control-unit"] = "blue"
       self.printCpu()
@@ -306,12 +320,12 @@ class CPU:
       if (not instructionFetched[1] and not instructionFetched[2]): #LDA
         if (not rawData[3]):                                        #If the data contains a reference to a memory address
           self.componentColors["control-unit"] = "white"
-          dataFetched =  self.mar(dataFetched, True, False)[-4:]
+          dataFetched =  self.mar(dataFetched, True, False, True)[-4:]
         setColorsBefore_()
         self.acumulator(True, dataFetched)
       elif (not instructionFetched[1] and instructionFetched[2]): #MOVAR, it works the same as a LDA on direct mode
         self.componentColors["control-unit"] = "white"
-        dataFetched =  self.mar(dataFetched, True, False)[-4:]
+        dataFetched =  self.mar(dataFetched, True, False, True)[-4:]
         setColorsBefore_()
         self.acumulator(True, dataFetched)
       elif (instructionFetched[1] and not instructionFetched[2]): #MOVAW
@@ -320,8 +334,40 @@ class CPU:
         for i in self.acumulator(False, "Don't care"):            #Since dataAcc has only 4-bit width, we need to append to it 4 zeros bits at the beggingg of it
           dataAcc.append(i)
         self.mdr(dataAcc, True, True)
-        self.mar(dataFetched, True, True)                         #The s3 parameter is a don't care
-        pass
+        self.mar(dataFetched, True, True, False)  
+      elif (instructionFetched[1] and instructionFetched[2]): #NOP                      #The s3 parameter is a don't care
+        self.componentColors = {
+          "team-members" : "white",
+          "border" : "yellow",
+          "title" : "white",
+          "counter": "red",
+          "mar" : "red",
+          "ram" : "red",
+          "clock" : "red",
+          "mir" : "red",
+          "mdr" : "red",
+          "alu" : "red",
+          "control-unit" : "red",
+          "outside-text" : "white",
+          "acumulator" : "red",
+        }
+        self.printCpu()
+        self.componentColors = {
+          "team-members" : "white",
+          "border" : "yellow",
+          "title" : "white",
+          "counter": "white",
+          "mar" : "white",
+          "ram" : "white",
+          "clock" : "red",
+          "mir" : "white",
+          "mdr" : "white",
+          "alu" : "white",
+          "control-unit" : "white",
+          "outside-text" : "white",
+          "acumulator" : "white",
+        }
+        self.printCpu()
 
     def aluInstructions(rawData):
       instructionFetched = rawData[:3]
@@ -329,7 +375,7 @@ class CPU:
       dataFetched = rawData[4:]
       if (not rawData[3]): #if rawData[3] is on False, the data is a reference to a memory address and direct MODE its invoked (it does another fetch cycle)
         self.componentColors["control-unit"] = "white"
-        dataFetched =  self.mar(dataFetched, True, False)[-4:] #Goes to mar and sends it the address fetched in the last cycle, sets the reference from CU as true and false for writting
+        dataFetched =  self.mar(dataFetched, True, False, True)[-4:] #Goes to mar and sends it the address fetched in the last cycle, sets the reference from CU as true and false for writting
                                                                #because the received data its 8-bits long, the first 4 are ignored and the last four are fetched.
       #Immediate MODE
       self.componentColors["control-unit"] = "blue"
@@ -340,4 +386,4 @@ class CPU:
       self.printCpu()
     
     decoder(dataIn) #MAIN CALL TO DECODER METHOD
-cpu = CPU()
+#cpu = CPU()
