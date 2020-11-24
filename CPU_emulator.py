@@ -6,7 +6,7 @@ class CPU:
     def __init__(self, rom):
         # Set initial values
 
-        self.clockSpeed = 1
+        self.clockSpeed = 1  # in seconds
         self.teamMembers = ["Aviles Ulises",
                             "Cruz Elian", "Silva Abner", "René Nuñez", "David Dennis"]
         self.clock = False
