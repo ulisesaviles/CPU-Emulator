@@ -10,7 +10,9 @@
 ![installation-2](/src/img/installation-2.png)
 
 >> NOTE: In case you already have Python installed, make sure your version is at least 3.7.0 for the program to run correctly.
+
 >> You can update your Python version by typing `python -m pip install --upgrade pip` on your Windows terminal and typing `sudo -H pip3 install --upgrade pip` if you are on a Linux distro.
+
 >> You can always check your `pip` version by typing `pip --version` on you terminal.
 
 ## User guide. ##
@@ -36,7 +38,13 @@ Once you hit enter you will be asked whether or not you want to add another inst
 
 ![Guide-1](/src/img/guide4.png)
 
+4. In case you'd like to change the **clock speed**, head to the "CPU_emulator" file and change the value of the variable "clockSpeed" with your desired speed in seconds.
+
+![Guide-5.png](/src/img/guide5.png)
+
 And it is as simple as that. Your emulation will start running and once all the tasks are finished, the program will stop. If you want to run another set of instructions run the program again as it was established at the beginning of the guide.
+
+
 
 ## Instruction Set ##
 | Opcode | Type                 | Category                | Description                                                                                                                                                                                                                                                                                   |
@@ -51,6 +59,7 @@ And it is as simple as that. Your emulation will start running and once all the 
 | NOP    | Direct               | Data transfer operation | It does not do any action. It just waits until the PC changes so a new instruction takes place.       
 
 ## Logical Flow ##
+![Logical-flow](/src/img/logical-flow.jpg)
 
 ## Data formats ##
 | Type of instruction |  First segment | Second segment | Third segment |Fourth segment |
@@ -68,11 +77,29 @@ And it is as simple as that. Your emulation will start running and once all the 
 | ROM |    4-bit    |     8-bit    |
 |  CU |    8-bit    |    Varies    |
 
+## Timing issues and performance ##
 
+| Opcode | Type      | Execution time                                       |
+|--------|-----------|------------------------------------------------------|
+| ADD    | Direct    | 0.26873016357421875 seconds + clock speed in seconds |
+| ADD    | Immediate | 0.42658519744873047 seconds + clock speed in seconds |
+| SUB    | Direct    | 0.24445748329162598 seconds + clock speed in seconds |
+| SUB    | Immediate | 0.34108805656433105 seconds + clock speed in seconds |
+| AND    | Direct    | 0.3138000965118408 seconds + clock speed in seconds  |
+| AND    | Immediate | 0.30643796920776367 seconds + clock speed in seconds |
+| OR     | Direct    | 0.27966880798339844 seconds + clock speed in seconds |
+| OR     | Immediate | 0.2461867332458496 seconds + clock speed in seconds  |
+| LDA    | Direct    | 0.22153925895690918 seconds + clock speed in seconds |
+| LDA    | Immediate | 0.27804112434387207 seconds + clock speed in seconds |
+| MOVAR  | Direct    | 0.2588512897491455 seconds + clock speed in seconds  |
+| MOVAW  | Direct    | 0.26668643951416016 seconds + clock speed in seconds |
+| NOP    | Direct    | 0.2182176113128662 seconds + clock speed in seconds  |
+
+>> NOTE: This tests were made with a Intel i5 8th generation 2.30Ghz CPU. This results may vary according to your CPU.
 
 ## Made by: ##
 * Ulises Aviles T031438
 * Elian Cruz T032218
 * Abner Silva T032069
 * René Nuñez T032277
-* Dennis Cárdenas Taltgo
+* Dennis Cárdenas T026290
