@@ -1,4 +1,18 @@
 # CPU-Emulator #
+
+## Installation. ##
+1. Go to [Python's official site](https://www.python.org/) and head to "Downloads" section.
+
+![installation-1](/src/img/installation-1.png)
+
+2. Download the latest version of Python available.
+
+![installation-2](/src/img/installation-2.png)
+
+>> NOTE: In case you already have Python installed, make sure your version is at least 3.7.0 for the program to run correctly.
+>> You can update your Python version by typing `python -m pip install --upgrade pip` on your Windows terminal and typing `sudo -H pip3 install --upgrade pip` if you are on a Linux distro.
+>> You can always check your `pip` version by typing `pip --version` on you terminal.
+
 ## User guide. ##
 1. At first, you’ll find yourself in the file explorer. What you want to do is to head on the “main.py" file and then run it on the terminal by pressing `F5`.
 
