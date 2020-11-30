@@ -13,7 +13,7 @@ while resp == "1":
     print("-------------------Instructions written-----------------------")
     for i in userRawInstructions:
         print(i)
-    print("-------------------New Instruction:-----------------------")
+    print("---------------------New Instruction:-------------------------")
     userRawInstructions.append(input("--: "))
     clear()
     resp = input("ADD ANOTHER? [1]-YES")

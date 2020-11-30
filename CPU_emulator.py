@@ -4,8 +4,7 @@ from os import system as sys
 class CPU:
   def __init__(self, rom):
   # Set initial values
-
-    self.clockSpeed = 1
+    self.clockSpeed = 2
     self.teamMembers = ["Aviles Ulises", "Cruz Elian", "Silva Abner"]
     self.clock = False
     self.colorPallete = {
@@ -135,7 +134,7 @@ class CPU:
   # Sample call: self.alu(True, False, True, False, [True, False, True, False]) # Where [True, False, True, False] is a list of booleans that represents the hexagesimal value of B in binary
   # The values of a are allways going to be the values stored in the acumulator because of the (retroalimentación en inlgés)
   # If you want to pass data stored in ram you must look for it first and then call alu() with the retrived data from ram
-  # If you want to access the retived data from thr alu, it will be always stored in the acumulator, the method DOES NOT returns data directly
+  # If you want to access the retived data from thr alu, it will be always stored in the acumulator, the method DOES NOT return data directly
   # Sample return: [True, False, True, False] (a binary number represented with python booleans stored in a list)
   ########################################################   IMPORTANT   #######################################################################
   # I've changed the opcode of the selectors to match with the one we've been using through the semester. It works as follows: 
@@ -329,10 +328,7 @@ class CPU:
         setColorsBefore_()
         self.acumulator(True, dataFetched)
       elif (instructionFetched[1] and not instructionFetched[2]): #MOVAW
-        dataAcc = [False for _ in range(3)]
-        dataAcc.append(True)
-        for i in self.acumulator(False, "Don't care"):            #Since dataAcc has only 4-bit width, we need to append to it 4 zeros bits at the beggingg of it
-          dataAcc.append(i)
+        dataAcc = self.acumulator(False, "Don't care")
         self.mdr(dataAcc, True, True)
         self.mar(dataFetched, True, True, False)  
       elif (instructionFetched[1] and instructionFetched[2]): #NOP                      #The s3 parameter is a don't care
@@ -368,6 +364,7 @@ class CPU:
           "acumulator" : "white",
         }
         self.printCpu()
+
 
     def aluInstructions(rawData):
       instructionFetched = rawData[:3]
