@@ -1,6 +1,5 @@
 from CPU_emulator import *
 import os
-
 userInputInstructions = []
 userRawInstructions = []
 #DATA FORMAT:
@@ -71,5 +70,5 @@ for i in userRawInstructions:
 #print(userInputInstructions)
 #clear()
 #print(userInputInstructions)
-cpu = CPU(userInputInstructions)
 
+cpu = CPU(userInputInstructions)
