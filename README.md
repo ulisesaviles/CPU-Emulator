@@ -66,7 +66,8 @@ And it is as simple as that. Your emulation will start running and once all the 
 |:-------:|:-------:|:------:|:------:|:------:|
 |    Immediate    |  OPCODE |    Blank space   |    'h'   |   Data    |
 |    Direct    | OPCODE |    Blank space    |    '#'    |     Address    |
-
+In both cases, the Data and the Address should be represented as an hexadecimal digit. One-digit numbers doesn't need a zero before.
+The NOP instruction does not require any aditional segment, just the plain instruction.
 ## System buses ##
 | Bus | Bitwidth-in | Bitwidth-out |
 |:---:|:-----------:|:------------:|

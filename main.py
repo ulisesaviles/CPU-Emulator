@@ -12,7 +12,7 @@ while resp == "1":
     print("-------------------Instructions written-----------------------")
     for i in userRawInstructions:
         print(i)
-    print("-------------------New Instruction:-----------------------")
+    print("---------------------New Instruction:-------------------------")
     userRawInstructions.append(input("--: "))
     clear()
     resp = input("ADD ANOTHER? [1]-YES")
@@ -46,14 +46,17 @@ def binaryToDec_(dec):
 
 for i in userRawInstructions:
     thisInstrs = instructions
-    index = int(i.find(" "))
-    operation = i[:index]
-    mode = i[index+1]
-    data = i[index+2:]
-    dataBinary = binaryToDec_(data if data.isnumeric() else 10 if data=="a" else 11 if data == "b" else 12 if data == "c" else 13 if data == "d" else 14 if data == "e" else 15)
-    opcode = thisInstrs[operation]
-    modeBinary = True if mode == "#" else False
-    userInputInstructions.append(opcode + [modeBinary] + dataBinary)
+    if (i=="NOP"):
+        userInputInstructions.append([True, True, True, False, False, False, False, False])
+    else:
+        index = int(i.find(" "))
+        operation = i[:index]
+        mode = i[index+1]
+        data = i[index+2:]
+        dataBinary = binaryToDec_(data if data.isnumeric() else 10 if data=="a" else 11 if data == "b" else 12 if data == "c" else 13 if data == "d" else 14 if data == "e" else 15)
+        opcode = thisInstrs[operation]
+        modeBinary = True if mode == "#" else False
+        userInputInstructions.append(opcode + [modeBinary] + dataBinary)
 
 #userInputInstructions.append([True, False, False, True, False, False, True, True])   #LDA #3
 #userInputInstructions.append([False, False, False, True, True, False, True, True])   #ADD #11
